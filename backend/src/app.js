@@ -14,7 +14,9 @@ app.use(httpLogger);
 // health check route (lets us confirm server & logs work)
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
-// (later) app.use('/api/auth', authRoutes)
+const authRoutes = require('./routes/auth.routes');
+app.use('/api/auth', authRoutes);
+
 // (later) app.use('/api/notes', noteRoutes)
 
 app.use(errorHandler);
