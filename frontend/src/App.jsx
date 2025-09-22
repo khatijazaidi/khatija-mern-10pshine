@@ -3,12 +3,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
 
-// placeholders; real pages will be added in later branches
-function Dashboard(){ return <div /> }
-function Editor()  { return <div /> }
-function Profile() { return <div /> }
-
+function Editor(){ return <div/> }
+function Profile(){ return <div/> }
 const isAuthed = () => !!localStorage.getItem('token');
 
 
