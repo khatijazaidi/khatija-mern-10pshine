@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-function Dashboard(){ return <div/> }
+import Dashboard from './pages/Dashboard';
+
 function Editor(){ return <div/> }
 function Profile(){ return <div/> }
 const isAuthed = () => !!localStorage.getItem('token');
