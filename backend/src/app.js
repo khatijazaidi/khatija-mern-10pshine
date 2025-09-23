@@ -4,7 +4,16 @@ const cors = require('cors');
 const httpLogger = require('./middleware/httpLogger');
 const errorHandler = require('./middleware/errorHandler');
 
+
 const app = express();
+const path = require('path');
+const uploadRoutes = require('./routes/upload.routes');
+
+// serve static files
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// upload route
+app.use('/api/uploads', uploadRoutes);
 
 // allow your React app to call the API
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true }));
