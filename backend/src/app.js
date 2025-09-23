@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const httpLogger = require('./middleware/httpLogger');
 const errorHandler = require('./middleware/errorHandler');
+import uploadRoutes from "./routes/uploadRoutes.js";
 
 
 const app = express();
