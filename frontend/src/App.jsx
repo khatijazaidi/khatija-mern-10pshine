@@ -21,5 +21,8 @@ export default function App(){
         <Route path="*" element={<Navigate to={isAuthed()?"/dashboard":"/login"} replace />} />
       </Routes>
     </BrowserRouter>
+
   );
+
+  
 }
