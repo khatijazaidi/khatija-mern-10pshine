@@ -84,6 +84,7 @@ export default function Dashboard() {
     try {
       const res = await client.get('/notes');
       setNotes(res.data?.notes || []);
+      setRefreshed(true);
     } catch (e) {
       setErr(e?.response?.data?.message || 'Failed to fetch notes');
     } finally {
