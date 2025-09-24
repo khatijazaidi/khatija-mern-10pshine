@@ -188,42 +188,6 @@ const NotesAppLogo = ({ size = 36 }) => (
     </MenuItem>
   );
 
-  // Derived: filtered + sorted notes (client-side for now)
-  const visibleNotes = useMemo(() => {
-    const text = q.trim().toLowerCase();
-    let list = [...notes];
-    if (text) {
-      list = list.filter(n =>
-        (n.title || '').toLowerCase().includes(text) ||
-        (n.content || '').toLowerCase().includes(text)
-      );
-    }
-    list.sort((a, b) => {
-      const aU = new Date(a.updatedAt || a.createdAt || 0).getTime();
-      const bU = new Date(b.updatedAt || b.createdAt || 0).getTime();
-      const aC = new Date(a.createdAt || 0).getTime();
-      const bC = new Date(b.createdAt || 0).getTime();
-      switch (sortBy) {
-        case 'titleAsc':
-          return (a.title || '').localeCompare(b.title || '');
-        case 'titleDesc':
-          return (b.title || '').localeCompare(a.title || '');
-        case 'createdDesc':
-          return bC - aC;
-        case 'createdAsc':
-          return aC - bC;
-        case 'updatedAsc':
-          return aU - bU;
-        case 'updatedDesc':
-        default:
-          return bU - aU;
-      }
-    });
-    return list;
-  }, [notes, q, sortBy]);
-
-  const totalNotes = notes.length;
-
   return (
     <Box
       sx={{
