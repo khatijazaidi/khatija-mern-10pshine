@@ -4,9 +4,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Editor from './pages/Editor';
 
-function Editor(){ return <div/> }
-function Profile(){ return <div/> }
 const isAuthed = () => !!localStorage.getItem('token');
 
 
@@ -27,5 +27,5 @@ export default function App() {
         <Route path="*" element={<Navigate to={isAuthed()?"/dashboard":"/login"} replace />} />
       </Routes>
     </BrowserRouter>
-  );
+  );
 }
