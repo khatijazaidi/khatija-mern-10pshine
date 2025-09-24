@@ -8,11 +8,6 @@ const COLORS = {
   mint: '#9AB89E'
 };
 
-function stripHtml(html = '') {
-  // quick, safe snippet for list view
-  return html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-}
-
 export default function NoteCard({ note, onClick }) {
   const snippet = (note.content || '').replace(/<[^>]+>/g, '').slice(0, 140);
 
