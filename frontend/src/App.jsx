@@ -7,7 +7,7 @@ import Dashboard from './pages/Dashboard';
 // import Profile from './pages/Profile';
 import Editor from './pages/Editor';
 
-function Editor(){ return <div/> }
+import Editor from './pages/Editor';
 function Profile(){ return <div/> }
 const isAuthed = () => !!localStorage.getItem('token');
 
