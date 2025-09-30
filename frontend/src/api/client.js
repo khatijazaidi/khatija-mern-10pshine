@@ -9,6 +9,14 @@ client.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
+    logInfo('http:request', {
+    method: config.method,
+    url: config.url,
+    hasAuth: !!token,
+  });
+  return config;
+
+
 });
 
 client.interceptors.response.use(
