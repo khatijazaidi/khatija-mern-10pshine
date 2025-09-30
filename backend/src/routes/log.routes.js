@@ -5,11 +5,12 @@ const logger = require('../config/logger');
 router.post('/', (req, res) => {
   const { level = 'info', message = '', meta = {} } = req.body || {};
 
-// Pick the logger function dynamically
-const logFn = logger[level] || logger.info;
-
-// Correct usage: logFn(object, message)
-logFn({ frontend: true, ...meta }, message);
+// Pick the logger function dynamically and call it correctly
+if (logger[level]) {
+  logger[level]({ frontend: true, ...meta }, message);
+} else {
+  logger.info({ frontend: true, ...meta }, message);
+}
 
 res.json({ success: true });
 
