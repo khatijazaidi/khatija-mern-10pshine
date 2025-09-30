@@ -15,6 +15,9 @@ app.use(httpLogger);
 
 // health check route (lets us confirm server & logs work)
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+const logRoutes = require('./routes/log.routes');
+app.use('/api/logs', logRoutes);
+
 
 const authRoutes = require('./routes/auth.routes');
 app.use('/api/auth', authRoutes);
