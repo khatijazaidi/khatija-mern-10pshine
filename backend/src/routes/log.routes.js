@@ -4,9 +4,15 @@ const logger = require('../config/logger');
 
 router.post('/', (req, res) => {
   const { level = 'info', message = '', meta = {} } = req.body || {};
-  const fn = logger[level] || logger.info;
-  fn({ frontend: true, ...meta }, message);
-  res.json({ ok: true });
+
+// Pick the logger function dynamically
+const logFn = logger[level] || logger.info;
+
+// Correct usage: logFn(object, message)
+logFn({ frontend: true, ...meta }, message);
+
+res.json({ success: true });
+
 });
 
 module.exports = router;
