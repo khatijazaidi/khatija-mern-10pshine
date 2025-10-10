@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../config/logger');
+const { sendEmail } = require('../utils/sendEmail');
 
 
 const signToken = (id) =>
@@ -44,6 +45,73 @@ exports.login = async (req, res, next) => {
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) { next(err); }
 };
+// POST /api/auth/forgot-password
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    const user = await User.findOne({ email });
+    const ttl = Number(process.env.RESET_TOKEN_TTL_MINUTES || 20);
+
+    if (user) {
+      // Create short-lived JWT reset token
+      const resetToken = jwt.sign(
+        { sub: user._id.toString(), purpose: 'password_reset' },
+        process.env.JWT_SECRET,
+        { expiresIn: `${ttl}m` }
+      );
+
+      const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+      console.log('[DEV ONLY] resetUrl:', resetUrl);
+      const html = `
+        <p>You requested a password reset for <b>${process.env.APP_NAME || 'our app'}</b>.</p>
+        <p>This link expires in ${ttl} minutes:</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>If you didn't request this, ignore this email.</p>
+      `;
+
+      await sendEmail({ to: email, subject: 'Reset your password', html });
+    }
+
+    // Always return 200 to avoid leaking whether the email exists
+    return res.json({ message: 'If that email exists, a reset link has been sent.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/auth/reset-password
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password)
+      return res.status(400).json({ message: 'Token and new password are required' });
+
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    if (payload.purpose !== 'password_reset')
+      return res.status(400).json({ message: 'Invalid token purpose' });
+
+    const user = await User.findById(payload.sub);
+    if (!user) return res.status(400).json({ message: 'User no longer exists' });
+
+    // Hash new password (you already store bcrypt hashes)
+    const hash = await bcrypt.hash(password, 10);
+    user.password = hash;
+    await user.save();
+
+    return res.json({ message: 'Password updated. You can now log in.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 // POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res, next) => {
