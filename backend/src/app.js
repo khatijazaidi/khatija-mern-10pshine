@@ -25,10 +25,6 @@ app.use('/api/auth', authRoutes);
 const noteRoutes = require('./routes/note.routes');
 app.use('/api/notes', noteRoutes);
 
-
-const authRoutes = require('./routes/auth.routes');
-app.use('/api/auth', authRoutes);
-
 // (later) app.use('/api/notes', noteRoutes)
 
 app.use(errorHandler);

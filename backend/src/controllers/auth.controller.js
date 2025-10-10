@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../config/logger');
 
+
 const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES || '1d' });
 
@@ -43,6 +44,10 @@ exports.login = async (req, res, next) => {
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) { next(err); }
 };
+
+
+
+
 
 // GET /api/auth/me  (optional)
 exports.me = async (req, res) => {
