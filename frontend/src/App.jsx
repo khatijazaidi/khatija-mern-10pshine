@@ -8,7 +8,7 @@ import Profile from './pages/Profile';
 import Editor from './pages/Editor';
 
 const isAuthed = () => !!localStorage.getItem('token');
-import ResetPassword from './pages/ResetPassword';
+
 
 
 export default function App() {
@@ -16,7 +16,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login/>} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        
 
         <Route path="/signup" element={<Signup/>} />
 
