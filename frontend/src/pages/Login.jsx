@@ -74,22 +74,23 @@ import { useState } from 'react';
 import {
   Box, Container, TextField, Button, Typography, Link as MuiLink,
   Alert, Stack, Paper, IconButton, InputAdornment, Checkbox,
-  FormControlLabel, CircularProgress, Divider,
-  Dialog, DialogTitle, DialogContent, DialogActions
+  FormControlLabel, CircularProgress, Divider
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import LoginIcon from '@mui/icons-material/Login';
 import LockIcon from '@mui/icons-material/Lock';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import GoogleIcon from '@mui/icons-material/Google';
+import FacebookIcon from '@mui/icons-material/Facebook';
 import client from '../api/client';
 import heroImage from '../assets/image1.jpg';
 
 // Theme colors
 const T = {
   cream: '#F5F5F0',
-  sand:  '#E6D8C3',
-  tan:   '#C2A68C',
+  sand: '#E6D8C3',
+  tan: '#C2A68C',
   green: '#5D866C',
 };
 
@@ -99,13 +100,6 @@ export default function Login() {
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-
-  // Forgot Password dialog state
-  const [fpOpen, setFpOpen] = useState(false);
-  const [fpEmail, setFpEmail] = useState('');
-  const [fpBusy, setFpBusy] = useState(false);
-  const [fpMsg, setFpMsg] = useState('');
-  const [fpErr, setFpErr] = useState('');
 
   const handleLogin = async () => {
     setError('');
@@ -121,26 +115,12 @@ export default function Login() {
     } finally { setBusy(false); }
   };
 
-  const handleForgot = async () => {
-    setFpErr(''); setFpMsg('');
-    if (!fpEmail) return setFpErr('Please enter your email');
-    try {
-      setFpBusy(true);
-      await client.post('/auth/forgot-password', { email: fpEmail });
-      setFpMsg('If that email exists, a reset link has been sent.');
-      setFpEmail('');
-    } catch (e) {
-      setFpErr(e?.response?.data?.message || 'Something went wrong');
-    } finally {
-      setFpBusy(false);
-    }
-  };
-
   return (
     <Box sx={{ minHeight: '100vh', position: 'relative', display: 'grid', placeItems: 'center', bgcolor: T.cream, overflow: 'hidden' }}>
-      {/* Background */}
+      {/* Richer textured background */}
       <Box aria-hidden sx={{ position: 'absolute', inset: 0 }}>
         <svg width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="none">
+          {/* Layered gradients */}
           <defs>
             <radialGradient id="bg1" cx="0.2" cy="0.2" r="0.8">
               <stop offset="0%" stopColor={T.green} stopOpacity="0.35" />
@@ -153,8 +133,10 @@ export default function Login() {
           </defs>
           <rect width="1600" height="900" fill="url(#bg1)"/>
           <rect width="1600" height="900" fill="url(#bg2)"/>
+          {/* wave strokes */}
           <path d="M0,640 C240,600 480,690 760,660 C1040,630 1320,710 1600,680" fill="none" stroke={T.tan} strokeWidth="12" strokeOpacity="0.4" />
           <path d="M0,260 C260,300 520,180 800,240 C1080,300 1340,200 1600,250" fill="none" stroke={T.green} strokeWidth="8" strokeOpacity="0.25" />
+          {/* accent circles */}
           <g opacity=".25" fill={T.green}>
             <circle cx="200" cy="150" r="90" />
             <circle cx="1480" cy="720" r="110" />
@@ -215,10 +197,7 @@ export default function Login() {
 
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <FormControlLabel control={<Checkbox sx={{ color: T.green }} />} label={<Typography sx={{ fontSize: 13 }}>Remember me</Typography>} />
-                {/* Open Forgot dialog instead of navigating */}
-                <MuiLink component="button" type="button" onClick={() => setFpOpen(true)} underline="hover" sx={{ color: T.green, fontWeight: 700, fontSize: 13 }}>
-                  Forgot password?
-                </MuiLink>
+                <MuiLink href="/forgot" underline="hover" sx={{ color: T.green, fontWeight: 700, fontSize: 13 }}>Forgot password?</MuiLink>
               </Box>
 
               <Button
@@ -239,12 +218,11 @@ export default function Login() {
                 {busy ? 'Signing in…' : 'Log in'}
               </Button>
 
-              {/* Removed social buttons */}
-              {/* <Divider>or continue with</Divider>
+              <Divider>or continue with</Divider>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button fullWidth variant="outlined">Google</Button>
-                <Button fullWidth variant="outlined">Facebook</Button>
-              </Box> */}
+                <Button fullWidth variant="outlined" startIcon={<GoogleIcon />} sx={{ borderRadius: 999, textTransform: 'none', borderColor: T.tan, color: T.green }}>Google</Button>
+                <Button fullWidth variant="outlined" startIcon={<FacebookIcon />} sx={{ borderRadius: 999, textTransform: 'none', borderColor: T.tan, color: T.green }}>Facebook</Button>
+              </Box>
 
               <Typography align="center" sx={{ color: T.tan, fontSize: 14 }}>
                 Don’t have an account?{' '}
@@ -261,32 +239,6 @@ export default function Login() {
           </Box>
         </Box>
       </Container>
-
-      {/* Forgot Password Dialog */}
-      <Dialog open={fpOpen} onClose={() => setFpOpen(false)} fullWidth maxWidth="xs">
-        <DialogTitle>Reset your password</DialogTitle>
-        <DialogContent dividers>
-          {fpMsg && <Alert severity="success" sx={{ mb: 2 }}>{fpMsg}</Alert>}
-          {fpErr && <Alert severity="error" sx={{ mb: 2 }}>{fpErr}</Alert>}
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            value={fpEmail}
-            onChange={(e) => setFpEmail(e.target.value)}
-            autoFocus
-          />
-          <Typography variant="body2" sx={{ mt: 1.5, color: T.tan }}>
-            We’ll email you a link to set a new password.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setFpOpen(false)}>Close</Button>
-          <Button onClick={handleForgot} disabled={fpBusy} variant="contained" sx={{ bgcolor: T.green, '&:hover': { bgcolor: '#4b6c57' } }}>
-            {fpBusy ? 'Sending…' : 'Send link'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

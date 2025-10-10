@@ -7,5 +7,4 @@ r.post('/login', c.login);
 r.get('/me', auth, c.me);  // optional protected endpoint
 
 
-
 module.exports = r;

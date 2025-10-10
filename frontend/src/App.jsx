@@ -9,15 +9,12 @@ function Editor()  { return <div /> }
 function Profile() { return <div /> }
 
 const isAuthed = () => !!localStorage.getItem('token');
-import ResetPassword from './pages/ResetPassword';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login/>} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-
         <Route path="/signup" element={<Signup/>} />
 
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>} />
