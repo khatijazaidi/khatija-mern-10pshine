@@ -2,7 +2,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../config/logger');
-const { sendEmail } = require('../utils/sendEmail');
+
+
+
 
 
 const signToken = (id) =>
@@ -77,10 +79,6 @@ exports.forgotPassword = async (req, res, next) => {
     next(err);
   }
 };
-
-
-
-
 
 // GET /api/auth/me  (optional)
 exports.me = async (req, res) => {
