@@ -45,6 +45,7 @@ exports.login = async (req, res, next) => {
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) { next(err); }
 };
+
 // POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res, next) => {
   try {
@@ -111,11 +112,6 @@ exports.resetPassword = async (req, res, next) => {
     next(err);
   }
 };
-
-
-
-
-
 
 // GET /api/auth/me  (optional)
 exports.me = async (req, res) => {
