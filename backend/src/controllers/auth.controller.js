@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../config/logger');
+const { sendEmail } = require('../utils/sendEmail');
 
 
 const signToken = (id) =>
