@@ -44,9 +44,38 @@ exports.login = async (req, res, next) => {
     res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
   } catch (err) { next(err); }
 };
+// POST /api/auth/forgot-password
+// Body: { email, newPassword }
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email, newPassword } = req.body;
 
+    if (!email || !newPassword) {
+      return res.status(400).json({ message: 'email and newPassword are required' });
+    }
 
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
 
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      return res
+        .status(200)
+        .json({ message: 'If the account exists, the password has been updated.' });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    user.password = hash;
+    user.passwordChangedAt = new Date();
+    await user.save();
+
+    logger.info({ id: user._id, email: user.email }, 'password reset successfully');
+    return res.status(200).json({ message: 'Password updated successfully.' });
+  } catch (err) {
+    next(err);
+  }
+};
 
 
 // GET /api/auth/me  (optional)
