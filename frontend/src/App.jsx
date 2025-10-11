@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+
 // placeholders; real pages will be added in later branches
-function Login()   { return <div /> }
-function Signup()  { return <div /> }
 function Dashboard(){ return <div /> }
 function Editor()  { return <div /> }
 function Profile() { return <div /> }
