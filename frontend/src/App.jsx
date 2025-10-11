@@ -7,6 +7,11 @@ import Dashboard from './pages/Dashboard';
 // import Profile from './pages/Profile';
 import Editor from './pages/Editor';
 
+// placeholders; real pages will be added in later branches
+function Dashboard(){ return <div /> }
+function Editor()  { return <div /> }
+function Profile() { return <div /> }
+
 const isAuthed = () => !!localStorage.getItem('token');
 
 
