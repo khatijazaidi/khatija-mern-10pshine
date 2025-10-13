@@ -150,6 +150,7 @@ const NotesAppLogo = ({ size = 36 }) => (
         (n.content || '').toLowerCase().includes(text)
       );
     }
+
     list.sort((a, b) => {
       const aU = new Date(a.updatedAt || a.createdAt || 0).getTime();
       const bU = new Date(b.updatedAt || b.createdAt || 0).getTime();
