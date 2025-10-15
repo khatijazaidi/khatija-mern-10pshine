@@ -70,7 +70,9 @@
 
 
 // src/pages/Login.jsx (compact form + richer green-themed background)
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
+
 import {
   Box, Container, TextField, Button, Typography, Link as MuiLink,
   Alert, Stack, Paper, IconButton, InputAdornment, Checkbox,
@@ -85,6 +87,8 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import client from '../api/client';
 import heroImage from '../assets/image1.jpg';
+import { logEvent } from '../utils/logger';
+
 
 // Theme colors
 const T = {
@@ -112,6 +116,10 @@ export default function Login() {
   const [fpMsg, setFpMsg] = useState('');
   const [fpErr, setFpErr] = useState('');
 
+    useEffect(() => { 
+    logEvent('info', 'view:login'); 
+  }, []);
+
   // password strength helper
   const pwScore = (s) => {
     let score = 0;
@@ -130,11 +138,15 @@ export default function Login() {
     if (!email || !password) return setError('Email and password are required');
     try {
       setBusy(true);
+      await logEvent('info', 'auth:login:attempt', { email });
       const res = await client.post('/auth/login', { email, password });
+       await logEvent('info', 'auth:login:success', { email, userId: res?.data?.user?._id });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       window.location.href = '/dashboard';
     } catch (e) {
+      await logEvent('error', 'auth:login:fail', { email, error: e?.response?.data?.message || e.message });
+
       setError(e?.response?.data?.message || 'Login failed');
     } finally { setBusy(false); }
   };
@@ -148,10 +160,16 @@ export default function Login() {
     if (fpNewPw !== fpNewPw2) return setFpErr('Passwords do not match');
     try {
       setFpBusy(true);
+      await logEvent('info', 'auth:forgot:attempt', { email: fpEmail });
+
       await client.post('/auth/forgot-password', { email: fpEmail, newPassword: fpNewPw });
+      await logEvent('info', 'auth:forgot:success', { email: fpEmail });
+
       setFpMsg('Password updated successfully. You can log in with your new password now.');
       setFpEmail(''); setFpNewPw(''); setFpNewPw2('');
     } catch (e) {
+      await logEvent('error', 'auth:forgot:fail', { email: fpEmail, error: e?.response?.data?.message || e.message });
+
       setFpErr(e?.response?.data?.message || 'Something went wrong');
     } finally {
       setFpBusy(false);
@@ -237,9 +255,19 @@ export default function Login() {
 
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <FormControlLabel control={<Checkbox sx={{ color: T.green }} />} label={<Typography sx={{ fontSize: 13 }}>Remember me</Typography>} />
-                <MuiLink component="button" type="button" onClick={() => setFpOpen(true)} underline="hover" sx={{ color: T.green, fontWeight: 700, fontSize: 13 }}>
-                  Forgot password?
-                </MuiLink>
+               <MuiLink
+  component="button"
+  type="button"
+  onClick={() => { 
+    setFpOpen(true); 
+    logEvent('info', 'auth:forgot:open'); 
+  }}
+  underline="hover"
+  sx={{ color: T.green, fontWeight: 700, fontSize: 13 }}
+>
+  Forgot password?
+</MuiLink>
+
               </Box>
 
               <Button
