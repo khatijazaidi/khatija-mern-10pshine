@@ -35,6 +35,8 @@ import TextFieldsIcon from '@mui/icons-material/TextFields';
 import NoteCard from '../components/NoteCard';
 import client from '../api/client';
 import { keyframes } from '@mui/system';
+import { logEvent } from '../utils/logger';
+
 
 
 /* ===== Theme (balanced, no pinks) ===== */
@@ -79,15 +81,21 @@ export default function Dashboard() {
   const [refreshed, setRefreshed] = useState(false);
   const openSort = Boolean(anchorEl);
 
+  useEffect(() => { logEvent('info', 'view:dashboard'); }, []);
+
+
   const load = async () => {
     setErr('');
     setLoading(true);
     try {
+      await logEvent('info', 'notes:fetch:attempt');
       const res = await client.get('/notes');
+      await logEvent('info', 'notes:fetch:success', { count: res.data?.notes?.length || 0 });
       setNotes(res.data?.notes || []);
       setRefreshed(true);
     } catch (e) {
       setErr(e?.response?.data?.message || 'Failed to fetch notes');
+      await logEvent('error', 'notes:fetch:fail', { error: msg });
     } finally {
       setLoading(false);
     }
@@ -139,6 +147,15 @@ const NotesAppLogo = ({ size = 36 }) => (
   useEffect(() => { load(); }, []);
   useEffect(() => { localStorage.setItem('dash:view', view); }, [view]);
   useEffect(() => { localStorage.setItem('dash:sort', sortBy); }, [sortBy]);
+  useEffect(() => {
+  const text = q.trim();
+  if (!text) return;
+  const t = setTimeout(() => {
+    logEvent('info', 'search:update', { q: text });
+  }, 400); // debounce
+  return () => clearTimeout(t);
+}, [q]);
+
 
   // filter + sort
   const visibleNotes = useMemo(() => {
@@ -182,7 +199,7 @@ const NotesAppLogo = ({ size = 36 }) => (
   const SortItem = ({ id, icon, label }) => (
     <MenuItem
       selected={sortBy === id}
-      onClick={() => { setSortBy(id); setAnchorEl(null); }}
+      onClick={() => { setSortBy(id); setAnchorEl(null);   logEvent('info', 'sort:change', { to: id }); }}
       sx={{ gap: 1 }}
     >
       {icon}{label}
@@ -259,14 +276,18 @@ const NotesAppLogo = ({ size = 36 }) => (
 
     {/* Icons */}
     <Tooltip title="Refresh">
-      <IconButton onClick={load} sx={{ color: 'white' }}>
+  <IconButton onClick={() => { logEvent('info', 'notes:refresh:click'); load(); }} sx={{ color: 'white' }}>
         <RefreshIcon />
       </IconButton>
     </Tooltip>
 
     <Tooltip title={view === 'grid' ? 'Switch to list view' : 'Switch to grid view'}>
       <IconButton
-        onClick={() => setView((v) => (v === 'grid' ? 'list' : 'grid'))}
+        onClick={() => {
+          const next = v === 'grid' ? 'list' : 'grid';
+          setView(next);
+          logEvent('info', 'ui:view:toggle', { to: next });
+        }}
         sx={{ color: 'white' }}
       >
         {view === 'grid' ? <ViewListIcon /> : <GridViewIcon />}
@@ -277,7 +298,7 @@ const NotesAppLogo = ({ size = 36 }) => (
     <Button
       startIcon={<AddIcon />}
       variant="contained"
-      onClick={() => navigate('/editor')}
+      onClick={() => { logEvent('info', 'nav:dashboard->editor'); navigate('/editor'); }}
       sx={{
         ml: 1,
         borderRadius: 999,
@@ -294,7 +315,7 @@ const NotesAppLogo = ({ size = 36 }) => (
     {/* Profile Avatar Button */}
   <Tooltip title="Profile">
   <IconButton
-    onClick={() => navigate('/profile')}
+     onClick={() => { logEvent('info', 'nav:dashboard->profile'); navigate('/profile'); }}
     sx={{
       ml: 1.8,
       width: 46,
@@ -390,7 +411,8 @@ const NotesAppLogo = ({ size = 36 }) => (
 </Typography>
 
             <Button
-              onClick={() => navigate('/editor')}
+              onClick={() => { logEvent('info', 'nav:dashboard->editor'); navigate('/editor'); }}
+
               variant="contained"
               sx={{
                 mt: 2,
@@ -621,7 +643,10 @@ const NotesAppLogo = ({ size = 36 }) => (
                   <Grid key={n._id} item xs={12} sm={6} md={4} lg={3}>
                     <NoteCard
                       note={n}
-                      onClick={() => navigate(`/editor/${n._id}`)}
+                     onClick={() => {
+  logEvent('info', 'open:note', { id: n._id, title: n.title || 'Untitled' });
+  navigate(`/editor/${n._id}`);
+}}
                       sx={{
                         cursor: 'pointer',
                         borderRadius: 3,
@@ -643,7 +668,10 @@ const NotesAppLogo = ({ size = 36 }) => (
                 {visibleNotes.map((n) => (
                   <Paper
                     key={n._id}
-                    onClick={() => navigate(`/editor/${n._id}`)}
+                    onClick={() => {
+  logEvent('info', 'open:note', { id: n._id, title: n.title || 'Untitled' });
+  navigate(`/editor/${n._id}`);
+}}
                     sx={{
                       p: 2,
                       borderRadius: 2.5,
@@ -719,7 +747,10 @@ const NotesAppLogo = ({ size = 36 }) => (
       {/* FAB */}
       <Tooltip title="Create note">
         <IconButton
-          onClick={() => navigate('/editor')}
+onClick={() => {
+  logEvent('info', 'nav:dashboard->editor', { source: 'fab' });
+  navigate('/editor');
+}}
           size="large"
           sx={{
             position: 'fixed',
