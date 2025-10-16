@@ -36,6 +36,7 @@ import NoteCard from '../components/NoteCard';
 import client from '../api/client';
 import { keyframes } from '@mui/system';
 
+
 /* ===== Theme (balanced, no pinks) ===== */
 const T = {
   cream: '#F5F5F0',
