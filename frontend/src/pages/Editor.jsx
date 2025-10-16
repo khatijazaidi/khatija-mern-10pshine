@@ -11,6 +11,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import client from '../api/client';
 import RichEditor from '../components/RichEditor';
+import { logEvent } from '../utils/logger';
 
 /* ===== Theme (same as Dashboard/Login) ===== */
 const T = {
@@ -78,12 +79,18 @@ export default function Editor() {
   const [saving, setSaving]   = useState(false);
   const [err, setErr]         = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  useEffect(() => {
+  logEvent('info', 'view:editor', { mode: id ? 'edit' : 'create', id });
+}, [id]);
+
 
   /* 🔔 Live status chip */
   const isNew = !id;
   const [status, setStatus] = useState(isNew ? 'Writing a new note' : 'Editing note');
   const idleTimer = useRef(null);
   const savedTimer = useRef(null);
+  const titleLogTimer = useRef(null);
+  const contentLogTimer = useRef(null);
 
   // Load existing note
   useEffect(() => {
@@ -92,13 +99,17 @@ export default function Editor() {
     (async () => {
       setErr(''); setLoading(true);
       try {
+        await logEvent('info', 'note:load:attempt', { id });
         const res = await client.get(`/notes/${id}`);
         if (!alive) return;
         setTitle(res.data.note?.title || '');
         setContent(res.data.note?.content || '');
         setStatus('Editing note');
+        await logEvent('info', 'note:load:success', { id });       // 🟢 add
       } catch (e) {
         setErr(e?.response?.data?.message || 'Failed to load note');
+        setErr(msg);
+        await logEvent('error', 'note:load:fail', { id, error: msg });
       } finally {
         setLoading(false);
       }
@@ -115,10 +126,20 @@ export default function Editor() {
   const onTitleChange = (e) => {
     setTitle(e.target.value);
     bumpTyping(isNew ? 'Writing a new note' : 'Editing note');
+     if (titleLogTimer.current) clearTimeout(titleLogTimer.current);
+  titleLogTimer.current = setTimeout(() => {
+    logEvent('info', 'note:change:title', { id, length: e.target.value.length });
+  }, 400);
   };
   const onContentChange = (val) => {
     setContent(val);
     bumpTyping(isNew ? 'Writing a new note' : 'Editing note');
+      if (contentLogTimer.current) clearTimeout(contentLogTimer.current);
+  contentLogTimer.current = setTimeout(() => {
+    // rough plain-text length (strip tags)
+    const plain = (val || '').replace(/<[^>]+>/g, '');
+    logEvent('info', 'note:change:content', { id, length: plain.length });
+  }, 500);
   };
 
   const handleSave = async () => {
@@ -129,6 +150,12 @@ export default function Editor() {
     }
     try {
       setSaving(true);
+          await logEvent('info', 'note:save:attempt', {
+      id,
+      mode: id ? 'edit' : 'create',
+      titleLen: title.trim().length
+    });
+      
       if (id) {
         await client.put(`/notes/${id}`, { title, content });
       } else {
@@ -140,23 +167,41 @@ export default function Editor() {
         () => setStatus(isNew ? 'Writing a new note' : 'Editing note'),
         1200
       );
+      await logEvent('info', 'note:save:success', {
+      id,
+      mode: id ? 'edit' : 'create'
+    });
       navigate('/dashboard');
     } catch (e) {
       setErr(e?.response?.data?.message || 'Save failed');
+      await logEvent('error', 'note:save:fail', {
+      id,
+      mode: id ? 'edit' : 'create',
+      error: msg
+    });
+    setErr(msg);
+
     } finally {
       setSaving(false);
     }
   };
 
-  const handleCancel = () => navigate('/dashboard');
+const handleCancel = () => {
+  logEvent('info', 'nav:editor->dashboard', { reason: 'cancel' });
+  navigate('/dashboard');
+};
 
   const handleDelete = async () => {
     try {
       setSaving(true);
+      await logEvent('info', 'note:delete:attempt', { id });
       await client.delete(`/notes/${id}`);
+      await logEvent('info', 'note:delete:success', { id });
       navigate('/dashboard');
     } catch (e) {
       setErr(e?.response?.data?.message || 'Delete failed');
+      await logEvent('error', 'note:delete:fail', { id, error: msg });
+      setErr(msg);
     } finally {
       setSaving(false);
       setConfirmOpen(false);
@@ -167,6 +212,8 @@ export default function Editor() {
     return () => {
       if (idleTimer.current) clearTimeout(idleTimer.current);
       if (savedTimer.current) clearTimeout(savedTimer.current);
+      if (titleLogTimer.current) clearTimeout(titleLogTimer.current);
+      if (contentLogTimer.current) clearTimeout(contentLogTimer.current);
     };
   }, []);
 
@@ -225,7 +272,12 @@ export default function Editor() {
           <Box sx={{ flexGrow: 1 }} />
 
           <Tooltip title="Back to Dashboard">
-            <IconButton onClick={() => navigate('/dashboard')} sx={{ color: 'white' }}>
+            <IconButton onClick={() => {
+      logEvent('info', 'nav:editor->dashboard', { action: 'back' });
+      navigate('/dashboard');
+    }}
+    sx={{ color: 'white' }}
+    >
               <ArrowBackIcon />
             </IconButton>
           </Tooltip>
@@ -233,7 +285,10 @@ export default function Editor() {
           {/* Profile avatar (same as Dashboard) */}
           <Tooltip title="Profile">
             <IconButton
-              onClick={() => navigate('/profile')}
+              onClick={() => {
+      logEvent('info', 'nav:editor->profile');
+      navigate('/profile');
+    }}
               sx={{
                 ml: 1.8,
                 width: 46, height: 46, borderRadius: '50%',
@@ -348,7 +403,10 @@ export default function Editor() {
                   variant="outlined"
                   color="error"
                   startIcon={<DeleteIcon />}
-                  onClick={() => setConfirmOpen(true)}
+                     onClick={() => {
+      logEvent('info', 'note:delete:open', { id });
+      setConfirmOpen(true);
+    }}
                   disabled={saving}
                   sx={{ ml: 'auto', borderRadius: 999, px: 3 }}
                 >
