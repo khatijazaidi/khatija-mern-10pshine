@@ -3,8 +3,12 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     mode: 'light',
-    primary: { main: '#1976d2' },
-    secondary: { main: '#9c27b0' }
+    primary: { main: '#0A400C' },
+    secondary: { main: '#819067' },
+    background: {
+      default: '#FEFAE0',
+      paper: '#B1AB86',
+    },
   },
   shape: { borderRadius: 12 },
   components: {
