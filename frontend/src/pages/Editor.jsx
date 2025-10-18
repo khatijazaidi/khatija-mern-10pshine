@@ -84,7 +84,6 @@ export default function Editor() {
 }, [id]);
 
 
-  /* 🔔 Live status chip */
   const isNew = !id;
   const [status, setStatus] = useState(isNew ? 'Writing a new note' : 'Editing note');
   const idleTimer = useRef(null);
@@ -311,6 +310,34 @@ const handleCancel = () => {
               />
             </IconButton>
           </Tooltip>
+<Button
+  onClick={() => {
+    logEvent('info', 'user:logout');
+    localStorage.clear();
+    navigate('/login');
+  }}
+  variant="contained"
+  sx={{
+    ml: 2,
+    px: 3,
+    py: 1,
+    borderRadius: 999,
+    textTransform: 'none',
+    fontWeight: 700,
+    fontSize: 15,
+    bgcolor: '#ffffff',
+    color: T.green,
+    boxShadow: '0 10px 22px rgba(0,0,0,0.16)',
+    '&:hover': {
+      bgcolor: '#fff4',
+      transform: 'translateY(-2px)',
+      boxShadow: '0 12px 28px rgba(0,0,0,0.24)',
+    },
+  }}
+>
+  Logout
+</Button>
+
         </Toolbar>
       </AppBar>
 
