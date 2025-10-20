@@ -16,6 +16,25 @@ jest.mock('../utils/logger', () => ({
   logEvent: jest.fn(() => Promise.resolve()),
 }));
 
+// ✅ Silence jsdom "Not implemented: navigation" (string or Error object)
+let consoleErrorSpy;
+beforeAll(() => {
+  const realError = console.error;
+  const shouldSilence = (arg) =>
+    (typeof arg === 'string' && arg.includes('Not implemented: navigation')) ||
+    (arg && typeof arg.message === 'string' && arg.message.includes('Not implemented: navigation'));
+
+  consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation((...args) => {
+    const first = args[0];
+    if (shouldSilence(first)) return; // swallow jsdom nav warning
+    realError(...args);               // pass everything else through
+  });
+});
+
+afterAll(() => {
+  consoleErrorSpy.mockRestore();
+});
+
 beforeEach(() => {
   jest.clearAllMocks();
   try { window.history.pushState({}, '', '/signup'); } catch (_) {}
@@ -43,11 +62,8 @@ describe('Signup Page', () => {
     expect(alert).toHaveTextContent(/all fields are required/i);
   });
 
-  test('successful signup: calls API, shows success, logs events (navigation silenced)', async () => {
+  test('successful signup: calls API, shows success, logs events (navigation warning silenced globally)', async () => {
     const user = userEvent.setup();
-
-    // Silence jsdom's navigation warning from window.location.href
-    const consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     client.post.mockResolvedValueOnce({ data: { ok: true } });
 
@@ -73,8 +89,7 @@ describe('Signup Page', () => {
     // Success alert appears
     expect(await screen.findByRole('alert')).toHaveTextContent(/account created\. please log in\./i);
 
-    // We do NOT assert window.location.href due to jsdom limitations
-    consoleErr.mockRestore();
+    // We intentionally do NOT assert on window.location.href due to jsdom limitations
   });
 
   test('failed signup: shows server error and logs fail', async () => {
@@ -108,7 +123,7 @@ describe('Signup Page', () => {
     const pw = screen.getByLabelText(/^password$/i);
     expect(pw).toHaveAttribute('type', 'password');
 
-    // Click the eye icon near password
+    // Click the eye icon near password (button that contains an SVG)
     const eyeBtn = screen.getAllByRole('button').find(btn => btn.querySelector('svg'));
     await user.click(eyeBtn);
 
