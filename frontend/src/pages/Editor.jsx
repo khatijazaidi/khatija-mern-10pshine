@@ -106,7 +106,7 @@ export default function Editor() {
         setStatus('Editing note');
         await logEvent('info', 'note:load:success', { id });       // 🟢 add
       } catch (e) {
-        setErr(e?.response?.data?.message || 'Failed to load note');
+        const msg = e?.response?.data?.message || 'Failed to load note';
         setErr(msg);
         await logEvent('error', 'note:load:fail', { id, error: msg });
       } finally {
@@ -172,13 +172,14 @@ export default function Editor() {
     });
       navigate('/dashboard');
     } catch (e) {
-      setErr(e?.response?.data?.message || 'Save failed');
+      const msg = e?.response?.data?.message || 'Save failed';
+      setErr(msg);
       await logEvent('error', 'note:save:fail', {
       id,
       mode: id ? 'edit' : 'create',
       error: msg
     });
-    setErr(msg);
+  
 
     } finally {
       setSaving(false);
@@ -198,9 +199,10 @@ const handleCancel = () => {
       await logEvent('info', 'note:delete:success', { id });
       navigate('/dashboard');
     } catch (e) {
-      setErr(e?.response?.data?.message || 'Delete failed');
-      await logEvent('error', 'note:delete:fail', { id, error: msg });
+      const msg = e?.response?.data?.message || 'Delete failed';
       setErr(msg);
+      await logEvent('error', 'note:delete:fail', { id, error: msg });
+      
     } finally {
       setSaving(false);
       setConfirmOpen(false);
