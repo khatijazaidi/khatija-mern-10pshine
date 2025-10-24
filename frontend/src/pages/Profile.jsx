@@ -6,7 +6,27 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import client from '../api/client';
-import { logInfo, logError, withApiLog } from '../utils/logger';
+import { logEvent } from '../utils/logger'; // ✅ use your existing logger
+
+/* --- Local wrappers so we don't change logger.js --- */
+const logInfo  = (message, meta = {}) => logEvent('info',  message, meta);
+const logError = (message, meta = {}) => logEvent('error', message, meta);
+const withApiLog = async (promise, meta = {}) => {
+  const name = meta?.name || 'Unnamed API Call';
+  logInfo(`API START → ${name}`, meta);
+  try {
+    const res = await promise;
+    logInfo(`API SUCCESS → ${name}`, { ...meta, status: res?.status });
+    return res;
+  } catch (err) {
+    logError(`API FAIL → ${name}`, {
+      ...meta,
+      status: err?.response?.status,
+      error: err?.response?.data?.message || err?.message,
+    });
+    throw err;
+  }
+};
 
 /* ===== Theme (same across app) ===== */
 const T = {
