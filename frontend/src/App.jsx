@@ -4,7 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
-// import Profile from './pages/Profile';
+import Profile from './pages/Profile';
 import Editor from './pages/Editor';
 
 const isAuthed = () => !!localStorage.getItem('token');
@@ -21,7 +21,7 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>} />
         <Route path="/editor" element={<ProtectedRoute><Editor/></ProtectedRoute>} />
         <Route path="/editor/:id" element={<ProtectedRoute><Editor/></ProtectedRoute>} />
-        {/* <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} /> */}
+        <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to={isAuthed()?"/dashboard":"/login"} replace />} />
       </Routes>
