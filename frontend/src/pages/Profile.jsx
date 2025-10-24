@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import client from '../api/client';
+import { logInfo, logError, withApiLog } from '../utils/logger';
 
 /* ===== Theme (same across app) ===== */
 const T = {
@@ -71,19 +72,43 @@ export default function Profile() {
   }, []);
 
   const logout = useCallback(() => {
+    // Log before clearing
+    logInfo('profile:logout:click', { where: 'navbarButton' });
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    logInfo('profile:logout:done');
     navigate('/login', { replace: true });
   }, [navigate]);
+
+  // Page mount log
+  useEffect(() => {
+    const meta = {
+      hasToken: Boolean(localStorage.getItem('token')),
+      hasUser: Boolean(localStorage.getItem('user')),
+      email: user?.email || undefined,
+      userId: user?._id || user?.id || undefined,
+    };
+    logInfo('profile:mount', meta);
+  }, [user]);
 
   // verify token
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        await client.get('/auth/me');
-      } catch {
+        logInfo('profile:auth:check:start');
+        const res = await withApiLog(client.get('/auth/me'), { name: 'GET /auth/me' });
         if (!alive) return;
+        logInfo('profile:auth:check:ok', {
+          userId: res?.data?.user?._id || res?.data?.id,
+          email:  res?.data?.user?.email || res?.data?.email,
+        });
+      } catch (e) {
+        if (!alive) return;
+        logError('profile:auth:check:fail', {
+          status: e?.response?.status,
+          error: e?.response?.data?.message || e?.message,
+        });
         logout();
       }
     })();
@@ -96,13 +121,23 @@ export default function Profile() {
     let alive = true;
     (async () => {
       try {
-        const res = await client.get('/notes');
+        logInfo('profile:notes:count:start');
+        const res = await withApiLog(client.get('/notes'), { name: 'GET /notes' });
         let count = 0;
         if (typeof res?.data?.count === 'number') count = res.data.count;
         else if (Array.isArray(res?.data?.notes)) count = res.data.notes.length;
-        if (alive) setNoteCount(count);
-      } catch {
-        if (alive) setNoteCount(0);
+        if (alive) {
+          setNoteCount(count);
+          logInfo('profile:notes:count:ok', { count });
+        }
+      } catch (e) {
+        if (alive) {
+          setNoteCount(0);
+          logError('profile:notes:count:fail', {
+            status: e?.response?.status,
+            error: e?.response?.data?.message || e?.message,
+          });
+        }
       }
     })();
     return () => { alive = false; };
@@ -125,7 +160,10 @@ export default function Profile() {
       >
         <Toolbar sx={{ py: 1.1 }}>
           <Box
-            onClick={() => navigate('/dashboard')}
+            onClick={() => {
+              logInfo('profile:navigate', { to: '/dashboard', via: 'brand' });
+              navigate('/dashboard');
+            }}
             sx={{ display: 'flex', alignItems: 'center', gap: 1.3, cursor: 'pointer' }}
           >
             <NotesAppLogo size={34} />
@@ -142,7 +180,10 @@ export default function Profile() {
           <Stack direction="row" spacing={1.5}>
             <Button
               variant="outlined"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => {
+                logInfo('profile:navigate', { to: '/dashboard', via: 'button' });
+                navigate('/dashboard');
+              }}
               sx={{
                 color: 'white',
                 borderColor: 'rgba(255,255,255,0.7)',
@@ -171,54 +212,54 @@ export default function Profile() {
       {/* Content */}
       <Container sx={{ mt: 4, mb: 6, maxWidth: 600, position: 'relative', zIndex: 1 }}>
         <Card
-  sx={{
-    borderRadius: 4,
-    background: `
-      linear-gradient(145deg, ${T.mint} 0%, ${T.cream} 100%) padding-box,
-      linear-gradient(135deg, ${T.green}33, ${T.tan}22) border-box
-    `,
-    border: '1px solid transparent',
-    boxShadow: '0 25px 60px rgba(93,134,108,0.25)',
-    backdropFilter: 'blur(12px)',
-    transition: 'transform .3s ease, box-shadow .3s ease',
-    '&:hover': {
-      transform: 'translateY(-4px)',
-      boxShadow: '0 30px 80px rgba(93,134,108,0.35)',
-    },
-  }}
->
-  <CardContent>
-    <Stack spacing={2}>
-      <Typography variant="h5" fontWeight={900} color={T.green}>
-        User Profile
-      </Typography>
+          sx={{
+            borderRadius: 4,
+            background: `
+              linear-gradient(145deg, ${T.mint} 0%, ${T.cream} 100%) padding-box,
+              linear-gradient(135deg, ${T.green}33, ${T.tan}22) border-box
+            `,
+            border: '1px solid transparent',
+            boxShadow: '0 25px 60px rgba(93,134,108,0.25)',
+            backdropFilter: 'blur(12px)',
+            transition: 'transform .3s ease, box-shadow .3s ease',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: '0 30px 80px rgba(93,134,108,0.35)',
+            },
+          }}
+        >
+          <CardContent>
+            <Stack spacing={2}>
+              <Typography variant="h5" fontWeight={900} color={T.green}>
+                User Profile
+              </Typography>
 
-      <Stack spacing={0.5}>
-        <Typography><strong>Name:</strong> {user?.name || '-'}</Typography>
-        <Typography><strong>Email:</strong> {user?.email || '-'}</Typography>
-      </Stack>
+              <Stack spacing={0.5}>
+                <Typography><strong>Name:</strong> {user?.name || '-'}</Typography>
+                <Typography><strong>Email:</strong> {user?.email || '-'}</Typography>
+              </Stack>
 
-      {/* Notes count */}
-      <Stack direction="row" alignItems="center" spacing={1}>
-        <Typography><strong>Total Notes:</strong></Typography>
-        {noteCount === null ? (
-          <CircularProgress size={18} sx={{ color: T.green }} />
-        ) : (
-          <Chip
-            label={`${noteCount}`}
-            sx={{
-              fontWeight: 800,
-              bgcolor: '#fff',
-              border: `1px solid ${T.line}`,
-              color: T.green,
-            }}
-          />
-        )}
-      </Stack>
-    </Stack>
-  </CardContent>
-</Card>
-
+              {/* Notes count */}
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography><strong>Total Notes:</strong></Typography>
+                {noteCount === null ? (
+                  <CircularProgress size={18} sx={{ color: T.green }} />
+                ) : (
+                  <Chip
+                    label={`${noteCount}`}
+                    sx={{
+                      fontWeight: 800,
+                      bgcolor: '#fff',
+                      border: `1px solid ${T.line}`,
+                      color: T.green,
+                    }}
+                    onClick={() => logInfo('profile:notes:count:chip:click', { count: noteCount })}
+                  />
+                )}
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
       </Container>
     </Box>
   );
