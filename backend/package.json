@@ -4,9 +4,11 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "cross-env NODE_ENV=test mocha --require test/setup.js \"test/unit/**/*.spec.js\" --timeout 10000",
+    "test:watch": "npm run test -- --watch",
+    "coverage": "cross-env NODE_ENV=test nyc --reporter=lcov --reporter=text npm test"
   },
   "keywords": [],
   "author": "",
@@ -26,8 +28,29 @@
     "pino": "^8.17.0",
     "pino-http": "^8.6.0"
   },
+  "nyc": {
+  "all": true,
+  "extension": [".js"],
+  "include": ["src/**/*.js"],
+  "exclude": [
+    "src/server.js",
+    "src/middleware/**",
+    "src/config/**",
+    "test/**"
+  ],
+  "reporter": ["text", "lcov", "html"],
+  "report-dir": "./coverage",
+  "instrument": true,
+  "sourceMap": false
+},
   "devDependencies": {
+    "chai": "^4.3.10",
+    "cross-env": "^10.1.0",
+    "mocha": "^11.7.4",
     "nodemon": "^3.1.10",
-    "pino-pretty": "^13.1.2"
+    "nyc": "^17.1.0",
+    "pino-pretty": "^13.1.1",
+    "sinon": "^21.0.0",
+    "supertest": "^7.1.4"
   }
 }
