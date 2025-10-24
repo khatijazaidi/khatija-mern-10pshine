@@ -70,7 +70,9 @@
 //   );
 // }
 // src/pages/Signup.jsx
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
+import { logEvent } from '../utils/logger';
 import {
   Box, Container, TextField, Button, Typography, Link as MuiLink,
   Alert, Stack, Paper, InputAdornment, IconButton, CircularProgress, Divider
@@ -82,6 +84,9 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import client from '../api/client';
 import heroImage from '../assets/image1.jpg';
+
+
+
 
 // Theme
 const T = {
@@ -100,16 +105,25 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [ok, setOk] = useState('');
 
+    useEffect(() => {
+    logEvent('info', 'view:signup');
+  }, []);
   const handleSignup = async () => {
     setError(''); setOk('');
     if (!name || !email || !password) return setError('All fields are required');
     try {
       setBusy(true);
+      await logEvent('info', 'auth:signup:attempt', { name, email });
+
       await client.post('/auth/register', { name, email, password });
+      await logEvent('info', 'auth:signup:success', { name, email });
+
       setOk('Account created. Please log in.');
       setTimeout(() => window.location.href = '/login', 600);
     } catch (e) {
       const errorMessage = e?.response?.data?.message || 'Signup failed';
+      await logEvent('error', 'auth:signup:fail', { name, email, error: errorMessage });
+
       setError(errorMessage);
     } finally { setBusy(false); }
   };

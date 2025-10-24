@@ -25,6 +25,13 @@ app.use('/api/auth', authRoutes);
 const noteRoutes = require('./routes/note.routes');
 app.use('/api/notes', noteRoutes);
 
+
+
+
+
+
+
+
 // (later) app.use('/api/notes', noteRoutes)
 
 app.use(errorHandler);

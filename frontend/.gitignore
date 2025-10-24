@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# ignore all node_modules everywhere
+**/node_modules/
+**/node_modules*/
+
+# explicit guard for the accidental copy
+frontend/node_modules copy/
