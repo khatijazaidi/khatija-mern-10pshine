@@ -2,5 +2,5 @@ projectKey=khatija-mern-10pshine
 serverUrl=http://localhost:9000
 serverVersion=25.10.0.114319
 dashboardUrl=http://localhost:9000/dashboard?id=khatija-mern-10pshine
-ceTaskId=9f3095bc-97b8-4272-893c-5c664ec25e9d
-ceTaskUrl=http://localhost:9000/api/ce/task?id=9f3095bc-97b8-4272-893c-5c664ec25e9d
+ceTaskId=385ed3c2-dcd6-46e2-8eea-4fe40348ba8c
+ceTaskUrl=http://localhost:9000/api/ce/task?id=385ed3c2-dcd6-46e2-8eea-4fe40348ba8c

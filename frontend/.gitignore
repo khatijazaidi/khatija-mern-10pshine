@@ -1,4 +1,6 @@
+# ===============================
 # Logs
+# ===============================
 logs
 *.log
 npm-debug.log*
@@ -7,12 +9,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# ===============================
+# Build directories
+# ===============================
 node_modules
 dist
 dist-ssr
 *.local
+**/node_modules/
+**/node_modules*/
 
-# Editor directories and files
+# ===============================
+# Editor / System files
+# ===============================
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,9 +31,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-# ignore all node_modules everywhere
-**/node_modules/
-**/node_modules*/
 
-# explicit guard for the accidental copy
+# ===============================
+# SonarQube & Coverage folders
+# ===============================
+.scannerwork/
+frontend/coverage/
+backend/coverage/
+
+# ===============================
+# Environment / Secrets
+# ===============================
+.env
+.env.local
+.env.*.local
+
+# ===============================
+# Accidental copies
+# ===============================
 frontend/node_modules copy/
