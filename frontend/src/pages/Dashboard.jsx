@@ -472,6 +472,7 @@ export default function Dashboard() {
             animation: `${pop} .28s ease`,
             position: 'relative',
             overflow: 'hidden',
+             mb: { xs: 3, md: 5 }, 
 
             background: `linear-gradient(145deg, ${T.mint} 0%, ${T.cream} 100%)`,
             border: `2px solid ${T.green}`, // ✅ Green outline
