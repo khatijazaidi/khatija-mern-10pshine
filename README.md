@@ -17,7 +17,7 @@ The application enables users to create, edit, delete, and view notes, ensuring 
 - Persistent note storage using MongoDB  
 - Centralized logging via Pino (backend)  
 - Consistent error handling across both frontend and backend  
-- Unit and integration tests with coverage reports  
+- Unit tests with coverage reports  
 - SonarQube integration for static code analysis  
 - Custom Quality Gate (MERN Gate) with Passed status  
 - Structured frontend test suite (Dashboard, Editor, Login, Navbar, NoteCard, ProtectedRoute, Signup)  
