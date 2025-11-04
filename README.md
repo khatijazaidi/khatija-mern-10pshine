@@ -1,41 +1,47 @@
 # khatija-mern-10pshine
- Notes App – MERN Stack Internship Project (10Pearls SHINE Internship)
-Overview
+**Notes App – MERN Stack Internship Project (10Pearls SHINE Internship)**
 
-This project is a MERN Stack Notes Application developed as part of the 10Pearls SHINE Internship Program.
-It demonstrates a full-stack implementation that includes backend logging with Pino, error handling, testing, and SonarQube integration for code quality analysis.
+---
+
+## Overview
+
+This project is a **MERN Stack Notes Application** developed as part of the 10Pearls SHINE Internship Program.  
+It demonstrates a full-stack implementation that includes backend logging with **Pino**, error handling, testing, and **SonarQube** integration for code quality analysis.  
 The application enables users to create, edit, delete, and view notes, ensuring clean architecture, maintainability, and production-level development practices.
 
-Key Features
+---
 
-Full CRUD (Create, Read, Update, Delete) operations
+## Key Features
 
-Persistent note storage using MongoDB
+- Full CRUD (Create, Read, Update, Delete) operations  
+- Persistent note storage using MongoDB  
+- Centralized logging via Pino (backend)  
+- Consistent error handling across both frontend and backend  
+- Unit and integration tests with coverage reports  
+- SonarQube integration for static code analysis  
+- Custom Quality Gate (MERN Gate) with Passed status  
+- Structured frontend test suite (Dashboard, Editor, Login, Navbar, NoteCard, ProtectedRoute, Signup)  
+- Modular folder separation for frontend and backend  
 
-Centralized logging via Pino (backend)
+---
 
-Consistent error handling across both frontend and backend
+## Tech Stack
 
-Unit and integration tests with coverage reports
+| Layer | Technology |
+|-------|-------------|
+| Frontend | React.js, Material UI, Vite |
+| Backend | Node.js, Express.js |
+| Database | MongoDB |
+| Testing | Jest (frontend), Mocha + Chai (backend) |
+| Logging | Pino (backend) |
+| Code Quality | SonarQube (local setup) |
+| Version Control | Git + GitHub |
 
-SonarQube integration for static code analysis
+---
 
-Custom Quality Gate (MERN Gate) with Passed status
+## Folder Structure
 
-Structured frontend test suite (Dashboard, Editor, Login, Navbar, NoteCard, ProtectedRoute, Signup)
-
-Modular folder separation for frontend and backend
-
-Tech Stack
-Layer	Technology
-Frontend	React.js, Material UI, Vite
-Backend	Node.js, Express.js
-Database	MongoDB
-Testing	Jest (frontend), Mocha + Chai (backend)
-Logging	Pino (backend)
-Code Quality	SonarQube (local setup)
-Version Control	Git + GitHub
-Folder Structure
+```text
 khatija-mern-10pshine/
 │
 ├── .scannerwork/                      # SonarQube analysis artifacts
@@ -64,25 +70,25 @@ khatija-mern-10pshine/
 │   │   │       ├── log.routes.spec.js
 │   │   │       └── note.controller.spec.js
 │   │   └── setup.js                   # Test environment setup
-│   ├── .env                           # Backend environment file
+│   ├── .env
 │   ├── package.json
 │   └── package-lock.json
 │
 ├── frontend/                          # Frontend (React + Vite + MUI)
 │   ├── coverage/                      # Jest coverage reports
 │   ├── node_modules/
-│   ├── public/                        # Static assets (icons, logo, etc.)
+│   ├── public/
 │   ├── src/
-│   │   ├── api/                       # Axios API functions
-│   │   ├── assets/                    # App images and icons
-│   │   ├── components/                # Reusable UI (Navbar, NoteCard, etc.)
-│   │   ├── pages/                     # Main pages (Login, Dashboard, Editor)
-│   │   ├── test/                      # Jest/RTL setup and utilities
+│   │   ├── api/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── test/
 │   │   │   ├── fileStub.js
 │   │   │   ├── setupTests.js
 │   │   │   ├── smoke.test.jsx
 │   │   │   └── test-utils.js
-│   │   ├── tests/                     # Component-specific test suites
+│   │   ├── tests/
 │   │   │   ├── Dashboard.test.jsx
 │   │   │   ├── Editor.test.jsx
 │   │   │   ├── Login.test.jsx
@@ -90,12 +96,12 @@ khatija-mern-10pshine/
 │   │   │   ├── NoteCard.test.jsx
 │   │   │   ├── ProtectedRoute.test.jsx
 │   │   │   └── Signup.test.jsx
-│   │   ├── utils/                     # Frontend helper functions
-│   │   ├── App.jsx                    # Root React component
+│   │   ├── utils/
+│   │   ├── App.jsx
 │   │   ├── App.css
 │   │   ├── index.css
-│   │   ├── main.jsx                   # React entry point
-│   │   └── theme.js                   # MUI custom theme
+│   │   ├── main.jsx
+│   │   └── theme.js
 │   ├── .env
 │   ├── .gitignore
 │   ├── babel.config.cjs
@@ -112,78 +118,73 @@ khatija-mern-10pshine/
 ├── README.md
 └── logs/ (optional)
 
-Application Flow
+```
 
-Login / Signup Page → Authentication entry point for users
 
-Dashboard Page → Displays all existing notes with search and sort features
+---
 
-Editor Page → Create or edit a note (rich text area)
+## Application Flow
 
-Profile Page → Displays user info and app usage logs
+- **Login / Signup Page:** Authentication entry point for users  
+- **Dashboard Page:** Displays all existing notes with search and sort features  
+- **Editor Page:** Create or edit a note (rich text area)  
+- **Profile Page:** Displays user info and app usage logs  
+- **Protected Routes:** Secure routing based on authentication state
+---
 
-Protected Routes → Secure routing based on authentication state
+## SonarQube Scanner Explanation
 
-Each page and component is tested for rendering, input handling, and route protection.
+The `.scannerwork` folder and `report-task.txt` file are automatically generated by the SonarQube Scanner during analysis.
 
-SonarQube Scanner Explanation
+- **Purpose:** Stores temporary scan results, metrics, and configuration  
+- **Not edited manually:** Automatically generated each time `sonar-scanner` runs  
+- **Visibility:** Contains metadata like project key, analysis date, and Quality Gate result  
 
-The .scannerwork folder and report-task.txt file are automatically generated by the SonarQube Scanner during analysis.
+---
 
-Purpose: Stores temporary scan results, metrics, and configuration.
+## Logging (Frontend & Backend)
 
-Not edited manually: Automatically generated each time sonar-scanner runs.
+### Backend Logging (Pino)
+- Centralized, high-performance structured logging  
+- Each API request logs method, endpoint, timestamp, and status  
+- Errors and exceptions include stack traces for debugging  
 
-Visibility: Contains metadata like project key, analysis date, and Quality Gate result.
+### Frontend Logging (Indirect via Backend)
+- The frontend does not use a separate logging library  
+- User interactions trigger backend API logs automatically, ensuring centralized monitoring  
 
-These confirm that SonarQube successfully analyzed the codebase and uploaded results to the dashboard.
+---
 
-Logging (Frontend & Backend)
-Backend Logging (Pino)
+## Error Handling
 
-Centralized, high-performance structured logging.
+### Backend
+- Global middleware (`errorHandler.js`) processes all exceptions  
+- Logged via Pino and returned as standardized JSON:
+  ```json
+  { "success": false, "message": "Internal Server Error" }
 
-Each API request logs method, endpoint, timestamp, and status.
+### Frontend
+- API calls wrapped in `try...catch`  
+- Displays user-friendly alerts instead of exposing technical details  
 
-Errors and exceptions include stack traces for debugging.
+---
 
-Frontend Logging (Indirect via Backend)
-The frontend does not use a separate logging library.
+## Testing
 
-Whenever users interact with the UI (like adding, editing, or deleting notes), these actions trigger backend API calls automatically logged by Pino.
+### Backend (Mocha + Chai)
+- Unit and integration tests for CRUD operations, routes, and middleware  
+- Coverage generated by NYC and stored in `backend/coverage/`  
 
-This ensures centralized, backend-driven monitoring.
+### Frontend (Jest + React Testing Library)
+- Component behavior, navigation, and rendering tests  
+- Coverage reports saved in `frontend/coverage/`  
 
-Error Handling
-Backend
+---
 
-Global middleware (errorHandler.js) processes all exceptions.
+## SonarQube Integration
 
-Logged via Pino and returned as JSON:
-
-{ "success": false, "message": "Internal Server Error" }
-
-Frontend
-
-API calls wrapped in try...catch.
-
-Displays user-friendly alerts instead of exposing technical details.
-
-Testing
-Backend (Mocha + Chai)
-
-Unit and integration tests for CRUD operations, routes, and middleware.
-
-Coverage generated by NYC and stored in backend/coverage/.
-
-Frontend (Jest + React Testing Library)
-
-Component behavior, navigation, and rendering tests.
-
-Coverage reports saved in frontend/coverage/.
-
-SonarQube Integration
-Configuration (sonar-project.properties)
+### Configuration (`sonar-project.properties`)
+```properties
 sonar.projectKey=khatija-mern-10pshine
 sonar.projectName=Khatija MERN 10PShine
 sonar.projectVersion=1.0
@@ -192,72 +193,103 @@ sonar.tests=backend,frontend/src
 sonar.test.inclusions=**/*.test.js,**/*.test.jsx
 sonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info,backend/coverage/lcov.info
 sonar.coverage.exclusions=**/node_modules/**,**/*.config.js
+```
+---
 
-Steps Performed
+## Steps Performed
 
-Installed SonarQube Community Edition locally
+1. Installed **SonarQube Community Edition** locally  
+2. Created a new project and generated an **authentication token**  
+3. Ran tests to generate **coverage reports**  
+4. Executed `sonar-scanner` from the **project root**  
+5. Verified **Quality Gate result** on the dashboard  
 
-Created a new project and generated an authentication token
+---
 
-Ran tests to generate coverage reports
+## Final Results
 
-Executed sonar-scanner from the project root
+| Metric | Result |
+|--------|--------|
+| **Security** | A |
+| **Reliability** | C |
+| **Maintainability** | A |
+| **Coverage** | 21.2% |
+| **Duplications** | 4.4% |
+| **Quality Gate** | Passed ✅ |
 
-Verified Quality Gate result on the dashboard
+---
 
-Final Results
-Metric	Result
-Security	A
-Reliability	C
-Maintainability	A
-Coverage	21.2%
-Duplications	4.4%
-Quality Gate	Passed
-Custom Quality Gate (MERN Gate)
-Condition	Operator	Value
-Issues	≤ 50	
-Security Hotspots Reviewed	≥ 0%	
-Coverage	≥ 20%	
-Duplicated Lines	≤ 10%	
-Setup Instructions
-Run Frontend
+## Custom Quality Gate (MERN Gate)
+
+| Condition | Operator | Value |
+|------------|-----------|--------|
+| Issues | ≤ 50 |
+| Security Hotspots Reviewed | ≥ 0% |
+| Coverage | ≥ 20% |
+| Duplicated Lines | ≤ 10% |
+
+---
+
+## Setup Instructions
+
+### Run Frontend
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
-Run Backend
+### Run Backend
+```bash
 cd backend
 npm install
 npm run dev
+```
 
-Run Tests
 
-Frontend
+## Run Tests
 
+### Frontend
+```bash
 cd frontend
 npm test -- --coverage
+```
 
-
-Backend
-
+### Backend
+```bash
 cd backend
 npm run test
-
-Run SonarQube Analysis
+```
+---
+## Run SonarQube Analysis
+```bash
 # Start SonarQube locally
 http://localhost:9000
 
+
+
 # From project root
 sonar-scanner
+```
+---
+## Internship Deliverables
 
-Internship Deliverables
-Deliverable	Status
-Frontend CRUD + UI	Completed
-Backend APIs	Completed
-Centralized Logging (Pino)	Completed
-Error Handling (Both Layers)	Completed
-Unit Testing & Coverage	Completed
-SonarQube Setup & Quality Gate	Completed
-Quality Gate Passed	Completed
-Documentation (README)	Completed
+| Deliverable | Status |
+|--------------|---------|
+| Frontend CRUD + UI | ✅ Completed |
+| Backend APIs | ✅ Completed |
+| Centralized Logging (Pino) | ✅ Completed |
+| Error Handling (Both Layers) | ✅ Completed |
+| Unit Testing & Coverage | ✅ Completed |
+| SonarQube Setup & Quality Gate | ✅ Completed |
+| Quality Gate Passed | ✅ Completed |
+| Documentation (README) | ✅ Completed |
+
+---
+
+## Conclusion
+
+This project fulfills all deliverables required for the **10Pearls SHINE Internship 2025**.  
+It demonstrates strong command of the **MERN stack**, including backend logging, structured error handling, testing, and automated quality checks using **SonarQube**.  
+With clean architecture, consistent testing, and a passed Quality Gate, this project represents real-world, production-grade software engineering practices.
 
